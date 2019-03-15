@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="UTF-8">
+  <title>The Psychic Game</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+
+<body>
+
+  <div class="container" >
+    <h1><span><strong>The Psychic Game</strong></span></h2>
+    <h2>
+      <strong>User score: </strong>
+      <span id="user-score">0</span>
+    </h2>
+    <h2>
+      <strong>Compurer score: </strong>
+      <span id="comp-score">0</span>
+    </h2>
+    <h2>
+      <strong>Guesses Left:</strong>
+      <span id="guessLeft">9</span>
+    </h2>
+    <h2>
+      <strong>Your Guesses so far:</strong>
+      <span id="guessValues"></span>
+    </h2>
+  </div>
+
+  <script type="text/javascript">
+
+    var userScore=document.getElementById("user-score");
+    var compScore=document.getElementById("comp-score");
+    var guessLeft= document.getElementById("guessLeft");
+    var guessValues=document.getElementById("guessValues");
+  
+    //control variables
+    var u=0; //holds the times the user wins
+    var c=0; //holds the time the computer wins
+    var g=9; // sets the number of opportunities thas a user have
+    var ug=[];//the array to hold the user guess 
+
+    // Randomly chooses a choice from a string. This is the Computer's guess.
+    var computerGuess = String.fromCharCode(97+Math.floor(Math.random() * 26));
+
+    
+    //function to validate if the user win, lose or  can continue playing
+    function validate(userG,compG){
+      if(userG===compG){
+        return "win"; //retuns win if the user match the letter choose by the computer
+      }
+      else if(ug.includes(userG)){
+        return "continue"; // returns continue if the user type for a second time a letter
+      }else if(g===1){
+        return "lose"; // returns lose if the user did match the computer guess in the last chance
+      }
+      else {
+        ug.push(userG); //pushes the user guess to an array to keep the letters already typed
+        return "next"; //returns next to get the next guess of the user
+      }
+    }
+    //function to reset teh vales for a new game
+    function reset(){
+      g=9;
+      ug=[];
+      //chooses a new letters for the next game
+      computerGuess = String.fromCharCode(97+Math.floor(Math.random() * 26));
+    }
+    //function to print the values to the screen depending if the user win, lose or is his next turn
+    function print(result,userGuess){
+      switch(result){
+        case "lose":
+          compScore.textContent=c;
+          userScore.textContent=u;
+          guessValues.textContent="";
+          guessLeft.textContent=9;
+        break;
+        case "next":
+        if (g===8)
+          guessValues.textContent=guessValues.textContent +userGuess;
+        else
+          guessValues.textContent=guessValues.textContent +","+userGuess;
+        
+        guessLeft.textContent =g;
+        break;
+        case "win":
+          userScore.textContent=u;
+          compScore.textContent=c;
+          guessValues.textContent="";
+          guessLeft.textContent=9;
+        break;
+      }
+    }
+    //funtion to validate if the key press is a letter
+    function isLetter(str) {
+      return str.length === 1 && str.match(/[a-z]/i);
+    }
+    
+    // This function is run whenever the user presses a key.
+    document.onkeyup = function(event) {
+     
+      var userGuess = event.key; // Determines which key was pressed.
+      userGuess= userGuess.toLowerCase();// set to lowercase the user guess
+      
+      //event key validation
+      if (isLetter(userGuess)){
+      //we evalute the game scenario 
+        switch(validate(userGuess, computerGuess)){
+          case "lose":
+            c++;
+            print("lose",userGuess);
+            reset();
+          break;
+          case "next":
+            g--;
+            print("next",userGuess);
+          break;
+          case "win":
+            u++;
+            print("win",userGuess);
+            reset();
+          break;
+        
+        }//switch ends
+      }// ends key validation
+  };//fend of the key event
+
+    
+  </script>
+
+</body>
+
+</html>
